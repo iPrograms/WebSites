@@ -1,0 +1,104 @@
+
+<?php
+
+$email ="";
+$password ="";
+
+if(isset($_POST['sub'])){
+
+	$email = $_POST['email'];
+	$password = $_POST['password'];
+
+	//var_dump($email);
+	//var_dump($password);
+	
+
+	$connection=new mysqli("localhost","cs174_01","***************","cs174_01");
+			//$connection=new mysqli("localhost","root","","174");
+					// Check connection
+			if (!mysqli_connect_errno($connection)){
+				//echo "connected";
+				 if ($stmt = $connection->prepare("SELECT id,firstname,lastname,username,email,phone,bio FROM register_users WHERE email=? AND password =?")) {
+   
+					   /* bind parameters for markers */
+					   $stmt->bind_param("ss", $email,$password);
+					   //echo $password;
+					   //echo $email;
+
+					   /* execute query */
+					   $stmt->execute();
+					   $stmt->bind_result($id,$fn, $ln,$un,$em,$ph,$bi);
+
+					   /* fetch value */
+							   if($stmt->fetch()){
+								
+								session_start();
+
+								$_SESSION['firstname'] = $fn;
+								$_SESSION['lastname'] = $ln;
+								$_SESSION['username'] = $un;
+								$_SESSION['phone'] = $ph;
+								$_SESSION['email'] = $em;
+								$_SESSION['bio'] = $bi;
+
+								if(!headers_sent()){
+												
+								header("Location:http://cs34.cs.sjsu.edu/cs174_01/public_html/p9_Account_Update.php");
+												
+								exit;	
+								}		
+							}
+							
+				}
+			}
+
+}
+
+?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head><title>Login Form</title> 
+
+<style type="text/css">
+#container{
+	margin:10px 100px 0px 200px;
+}
+
+#errors{
+	display:none;
+}
+#errors p{
+	color:red;
+}
+
+</style>
+</head>
+
+
+
+<body>
+
+	<form action="" method="post">
+
+		<div id="container">
+			<div id="errors">
+				<p id="login">Invalid Log in information</p>
+			</div>
+			<div>
+				<label>Email</label>
+				<input type="text" name="email" id="email" size="25"/>
+			</div>
+			<div>
+				<label>Password</label>
+				<input type="password" name="password" id="password" size="25"/>
+			</div>
+			<div>
+				<input type="submit" name="sub" id="sub" value="Log in"/>
+			</div>
+		</div>	
+	</form>
+
+</body>
+
+</html>

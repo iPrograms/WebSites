@@ -1,0 +1,90 @@
+<?php
+//Author Manzoor Ahmed
+//CS 174 project 9
+session_start();
+if($_SESSION['email']==''){
+	header("Location:p9_Login.php");
+	exit;
+}
+?>
+
+<html>
+<head><title>Account Update </title>
+<style type="text/css">
+.al{
+	color:red;
+	display:none;
+}
+</style>
+<script>
+	function showAlertMessage(){
+		document.getElementById('al').style.display="inline";
+	}
+</script>
+</head>
+<div id="errors">
+
+<?php
+
+	if(isset($_POST['submit'])){
+	
+	$firstName = $_POST['firstname']; //
+	//$userName = $_POST['username'];
+	$lastName = $_POST['lastname']; //
+	$phone = $_POST['phone']; //
+	$password = $_POST['password']; //
+	$email = $_POST['email']; //
+	$bio = $_POST['bio'];
+
+	   	
+	   	$connection=new mysqli("localhost","cs174_01","************","cs174_01");
+			//$connection=new mysqli("localhost","root","","174");
+			// Check connection
+			if (!mysqli_connect_errno($connection)){
+					
+					$id = 	$_SESSION['id'];
+											
+							if($sql = $connection->prepare("UPDATE register_users 
+							SET firstname =?, lastname=?, phone =?,  email=?,  bio =? 
+							WHERE id = ?"))
+							{
+							    echo "here";
+									$sql->bind_param('sssssi',$firstName,$lastName,$phone,$email,$bio,$id);
+									$sql->execute();
+									$sql->close();
+								
+									$_SESSION['firstname'] = $firstName;
+									$_SESSION['lastname'] = $lastName;
+									$_SESSION['username'] = $userName;
+									$_SESSION['phone'] = $phone;
+									$_SESSION['email'] = $email;
+									$_SESSION['bio'] = $bio;
+									$_SESSION['id'] = $id;
+
+											if(!headers_sent()){
+																		
+												   header("Location:http://cs34.cs.sjsu.edu/cs174_01/public_html/p9_Account_Update.php");
+													exit;	
+											}		
+									}
+							}else{
+							      echo "Connection error";
+				}
+}
+?>
+
+</div>
+	<form action="" method ="post">
+		<div><label for="firstname">First Name</label><input type="text" name ="firstname" id="firstname"value='<?php echo $_SESSION['firstname'];?>'/></div>
+		<div><label for="lastname">Last Name</label><input type="text" id="lastname" name="lastname"value='<?php echo $_SESSION['lastname'];?>'/></div>
+		<div><label for="email">Email</label><input type="text"  name="email" id="email" value='<?php echo $_SESSION['email'];?>'/>
+		</div>
+		<div><label for="phone">Phone</label><input type="text"  name="phone" id="phone" value='<?php echo $_SESSION['phone'];?>'/>
+		</div>
+		<div><label for="password">Password</label><input type="password" name="password"  id="password" onblur="showAlertMessage()"/><span id="al" name="al" class="al">Warning! Your password will be updated!</span></div>
+		<div><div><label for="bio">Your Bio</label></div>
+		<textarea rows="4" cols="30" name="bio" id="bio"><?php echo $_SESSION['bio'];?></textarea></div>
+		<div><input type="submit" name="submit" id="submit" value="Update Account"/></div>
+	</form>
+
+</html>

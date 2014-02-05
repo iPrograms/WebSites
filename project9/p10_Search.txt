@@ -1,0 +1,64 @@
+<html>
+<head>
+	<title>Project 10 Part 1</title>
+</head>
+<body>
+<h3>Manzoor Ahmed CS 174 TU/TH 900AM </h3>
+
+<?php
+
+//Manzoor Ahmed
+//CS 174 Project 10
+//Part 1
+if(isset($_GET['s'])){
+	$search = $_GET['s'];
+
+$object = array();
+
+ 	$connection=new mysqli("localhost","cs174_01","*********************","cs174_01");		
+	//$connection=new mysqli("localhost","root","","174");
+
+		    // Check connection
+			if (!mysqli_connect_errno($connection)){
+			
+				if($sql = $connection->prepare(
+							
+						   "SELECT id, name, price, description, country 
+							FROM products
+							WHERE id =?
+							OR name =?
+							OR description =?"))
+							{
+									$sql->bind_param('sss',$search,$search,$search);
+									$sql->execute();
+									$sql->bind_result($id,$name,$price,$description,$country);
+
+									while($sql->fetch()){
+										
+										$i = $id;
+										$n = $name;
+										//$p = $price;
+										$d = $description;
+										//$c = $country;
+									
+										$p = array("id"=>$id,"Name"=>$name,"Price"=>$price);	
+										$js = json_encode($p);
+										array_push($object,$js);
+
+									}//while
+
+									$ob = json_encode($object);
+									echo $ob;
+									$sql->close();
+							}//if
+			else{
+				echo "Error connecting to database";
+			}
+	}
+}
+else{
+	echo "Please provide search perameter!";
+}
+?>
+</body>
+</html>
